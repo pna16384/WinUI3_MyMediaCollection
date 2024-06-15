@@ -16,6 +16,7 @@ using Windows.Foundation;
 using Windows.Foundation.Collections;
 using Windows.UI.WebUI;
 using MyMediaCollection.ViewModels;
+using System.Runtime.InteropServices;
 
 // This version explicitly updates the interface in relevant handlers via x:Class references to items 
 
@@ -35,11 +36,15 @@ namespace MyMediaCollection
 
         public MainWindow()
         {
+            ViewModel.reportEventStatus("MainWindow (before InitialiseComponent...");
             this.InitializeComponent();
+            ViewModel.reportEventStatus("MainWindow (after InitialiseComponent...");
         } 
 
         private async void AddButton_Click(object sender, RoutedEventArgs e)
         {
+            ViewModel.reportEventStatus("Add button pressed...");
+
             var dialog = new ContentDialog
             {
                 Title = "My Media Collection",

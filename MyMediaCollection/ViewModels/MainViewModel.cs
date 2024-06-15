@@ -4,13 +4,19 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
+using System.Diagnostics;
 
 namespace MyMediaCollection.ViewModels
 {
     public class MainViewModel : BindableBase
     {
+
+        [DllImport("kernel32.dll", CharSet = CharSet.Auto)]
+        public static extern void OutputDebugString(string message);
+
         private string selectedMedium;
         private ObservableCollection<MediaItem> items;
         private ObservableCollection<MediaItem> allItems;
@@ -20,8 +26,37 @@ namespace MyMediaCollection.ViewModels
 
         public MainViewModel() 
         {
+
+            OutputDebugString("MainViewModel constructor\n");
+
+            if (this.eventSet())
+            {
+                OutputDebugString("PropertyChanged event set!!!\n\n\n");
+            }
+            else
+            {
+                OutputDebugString("PropertyChanged event STILL NULL!!!\n\n\n");
+            }
+
             PopulateData();
         }
+
+        public void reportEventStatus(string prefixText)
+        {
+            string reportText;
+
+            if (this.eventSet())
+            {
+                reportText = "PropertyChanged SET\n\n";
+            }
+            else
+            {
+                reportText = "PropertyChanged STILL NULL\n\n";
+            }
+
+            MyMediaCollection.Debug.Console.write(prefixText + reportText);
+        }
+
 
         public void PopulateData()
         {

@@ -41,6 +41,11 @@ namespace MyMediaCollection.ViewModels
             return true;
         }
 
+        protected bool eventSet()
+        {
+            return PropertyChanged != null;
+        }
+
 
     }
 }
