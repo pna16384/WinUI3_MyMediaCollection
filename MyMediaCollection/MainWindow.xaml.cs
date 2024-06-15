@@ -16,6 +16,8 @@ using Windows.Foundation;
 using Windows.Foundation.Collections;
 using Windows.UI.WebUI;
 
+// This version explicitly updates the interface in relevant handlers via x:Class references to items 
+
 // To learn more about WinUI, the WinUI project structure,
 // and more about our project templates, see: http://aka.ms/winui-project-info.
 
