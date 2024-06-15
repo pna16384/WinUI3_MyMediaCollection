@@ -15,6 +15,7 @@ using System.Runtime.InteropServices.WindowsRuntime;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
 using Windows.UI.WebUI;
+using MyMediaCollection.ViewModels;
 
 // This version explicitly updates the interface in relevant handlers via x:Class references to items 
 
@@ -28,48 +29,15 @@ namespace MyMediaCollection
     /// </summary>
     public sealed partial class MainWindow : Window
     {
-        private IList<MediaItem> _allItems {  get; set; }
-        private IList<MediaItem> _items { get; set; }
-        private IList<string> _mediums { get; set; }
-        private bool _isLoaded;
+        // View reference to main ViewModel to bind to (static member of App)
+        public MainViewModel ViewModel => App.ViewModel;
+
 
         public MainWindow()
         {
             this.InitializeComponent();
-            ItemList.Loaded += ItemList_Loaded;
-            ItemFilter.Loaded += ItemFilter_Loaded;
-        }
-
-        private void ItemFilter_Loaded(object sender, RoutedEventArgs e)
-        {
-            var filterCombo = (ComboBox)sender;
-            PopulateData();
-            filterCombo.ItemsSource = _mediums;
-            filterCombo.SelectedIndex = 0;
-
-            ItemFilter.SelectionChanged += ItemFilter_SelectionChanged;
-        }
-
-        private void ItemFilter_SelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
-            var updatedItems = (from item in _allItems
-                                where string.IsNullOrWhiteSpace(ItemFilter.SelectedValue.ToString()) ||
-                                ItemFilter.SelectedValue.ToString() == "All" ||
-                                ItemFilter.SelectedValue.ToString() == item.MediaType.ToString()
-                                select item).ToList();
-
-            ItemList.ItemsSource = updatedItems;
-        }
-
-        private void ItemList_Loaded(object sender, RoutedEventArgs e)
-        {
-            var listView = (ListView)sender;
-            PopulateData();
-            listView.ItemsSource = _items;
-        }
-
-
-        
+            //Loaded += MainPage_Loaded;
+        } 
 
         private async void AddButton_Click(object sender, RoutedEventArgs e)
         {
@@ -84,9 +52,6 @@ namespace MyMediaCollection
             await dialog.ShowAsync();
         }
 
-        /*private void myButton_Click(object sender, RoutedEventArgs e)
-        {
-            myButton.Content = "Clicked";
-        }*/
+
     }
 }
