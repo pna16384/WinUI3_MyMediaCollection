@@ -18,9 +18,8 @@ namespace MyMediaCollection.ViewModels
         private MediaItem selectedMediaItem;
         private int additionalItemCount = 1;
 
-        public MainViewModel()
+        public MainViewModel() 
         {
-            Console.WriteLine("MainViewModel populate data...");
             PopulateData();
         }
 

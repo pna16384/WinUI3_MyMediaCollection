@@ -36,7 +36,6 @@ namespace MyMediaCollection
         public MainWindow()
         {
             this.InitializeComponent();
-            //Loaded += MainPage_Loaded;
         } 
 
         private async void AddButton_Click(object sender, RoutedEventArgs e)

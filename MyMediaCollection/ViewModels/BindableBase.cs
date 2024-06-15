@@ -11,14 +11,19 @@ namespace MyMediaCollection.ViewModels
 {
     public class BindableBase : INotifyPropertyChanged
     {
-        public event PropertyChangedEventHandler PropertyChanged; // nullable (init to null)
+        public event PropertyChangedEventHandler PropertyChanged = null; // nullable (init to null)
     
 
         // Inherited and accessible from ViewModels derived from BindableBase
         protected void OnPropertyChanged([CallerMemberName] string propertyName = null)
         {
             // If above PropertyChanged event set, invoke it an and pass property changed name as event arg
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+
+            if (PropertyChanged != null)
+            {
+                PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
+            }
+            //PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
 
 
