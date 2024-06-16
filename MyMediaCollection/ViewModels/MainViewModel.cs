@@ -9,6 +9,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Diagnostics;
 using MyMediaCollection;
+using System.Windows.Input;
 
 namespace MyMediaCollection.ViewModels
 {
@@ -18,6 +19,7 @@ namespace MyMediaCollection.ViewModels
         private ObservableCollection<MediaItem> items;
         private ObservableCollection<MediaItem> allItems;
         private IList<string> mediums;
+        
         private MediaItem selectedMediaItem;
         private int additionalItemCount = 1;
 
@@ -36,6 +38,9 @@ namespace MyMediaCollection.ViewModels
             }
 
             PopulateData();
+
+            // Setup commands
+            
         }
 
         public void reportEventStatus(string prefixText)
@@ -172,9 +177,14 @@ namespace MyMediaCollection.ViewModels
             set
             {
                 SetProperty(ref selectedMediaItem, value);
+                ((RelayCommand)DeleteCommand).RaiseCanExecuteChanged();
             }
         }
 
+
+        // Commands
+
+        public ICommand AddEditCommand { get; set; }
         public void AddOrEditItem()
         {
             // Note this is temporary until
@@ -190,13 +200,19 @@ namespace MyMediaCollection.ViewModels
                 Name = $"CD {additionalItemCount}"
             };
 
+            allItems.Add(newItem);
             Items.Add(newItem);
+
             additionalItemCount++;
         }
 
-        public void DeleteItem()
+        public ICommand DeleteCommand { get; set; }
+        private void DeleteItem()
         {
+            allItems.Remove(SelectedMediaItem);
             Items.Remove(SelectedMediaItem);
         }
+
+        private bool CanDeleteItem() => selectedMediaItem != null;
     }
 }
