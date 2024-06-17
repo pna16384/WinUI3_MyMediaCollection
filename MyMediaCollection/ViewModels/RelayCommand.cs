@@ -8,14 +8,14 @@ using Windows.Networking.NetworkOperators;
 
 namespace MyMediaCollection.ViewModels
 {
-    internal class RelayCommand : ICommand
+    internal class RelayCommandA : ICommand
     {
         private readonly Action action;
         private readonly Func<bool> canExecute; // true if null (no conditions) or deletgate returns true to say action can be performed (useful for telling UI actions are not possible and disabling controls accordingly)
 
-        public RelayCommand(Action action) : this(action, null) { }
+        public RelayCommandA(Action action) : this(action, null) { }
 
-        public RelayCommand(Action action, Func<bool> canExecute)
+        public RelayCommandA(Action action, Func<bool> canExecute)
         {
             if (action==null)
             {

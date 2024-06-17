@@ -10,54 +10,35 @@ using System.Threading.Tasks;
 using System.Diagnostics;
 using MyMediaCollection;
 using System.Windows.Input;
+using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
 
 namespace MyMediaCollection.ViewModels
 {
-    public class MainViewModel : BindableBase
+    public partial class MainViewModel : ObservableObject
     {
-        private string selectedMedium;
-        private ObservableCollection<MediaItem> items;
-        private ObservableCollection<MediaItem> allItems;
+        [ObservableProperty]
+        private ObservableCollection<MediaItem> items; // data source for list - shows filtered items based on selected medium
+
+        [ObservableProperty]
         private IList<string> mediums;
-        
+
+
+        [ObservableProperty]
+        private string selectedMedium;
+
+        [ObservableProperty]
+        [NotifyCanExecuteChangedFor(nameof(DeleteItemCommand))]
         private MediaItem selectedMediaItem;
+
+
+        private ObservableCollection<MediaItem> allItems; // private collection of all items ("master" list)
         private int additionalItemCount = 1;
+
 
         public MainViewModel() 
         {
-
-            Debug.Console.write("MainViewModel constructor\n");
-
-            if (this.eventSet())
-            {
-                Debug.Console.write("PropertyChanged event set!!!\n\n\n");
-            }
-            else
-            {
-                Debug.Console.write("PropertyChanged event STILL NULL!!!\n\n\n");
-            }
-
             PopulateData();
-
-            // Setup commands
-            DeleteCommand = new RelayCommand(DeleteItem, CanDeleteItem);
-            AddEditCommand = new RelayCommand(AddOrEditItem); // don't need CanDeleteItem param as Add is always available
-        }
-
-        public void reportEventStatus(string prefixText)
-        {
-            string reportText;
-
-            if (this.eventSet())
-            {
-                reportText = "PropertyChanged SET\n\n";
-            }
-            else
-            {
-                reportText = "PropertyChanged STILL NULL\n\n";
-            }
-
-            Debug.Console.write(prefixText + reportText);
         }
 
 
@@ -104,12 +85,10 @@ namespace MyMediaCollection.ViewModels
 
             // -----------------
 
-            items = new ObservableCollection<MediaItem> { cd, book, bluRay };
+            Items = new ObservableCollection<MediaItem> { cd, book, bluRay };
             allItems = new ObservableCollection<MediaItem> { cd, book, bluRay };
 
-            // -----------------
-
-            mediums = new List<string> {
+            Mediums = new List<string> {
                 "All",
                 nameof(ItemType.Book),
                 nameof(ItemType.Music),
@@ -118,75 +97,35 @@ namespace MyMediaCollection.ViewModels
 
             // -----------------
 
-            selectedMedium = mediums[0];
+            SelectedMedium = Mediums[0];
         }
 
         
-        // Public properties
+        // Note: No public properties here - ObservableProperty attribute provides interface for view to be dependent upon
 
-        public ObservableCollection<MediaItem> Items
+
+        partial void OnSelectedMediumChanged(string value) // declaration generated as part of ObservableObject (so naming here follows convention!)
         {
-            get
+            Items.Clear();
+            foreach (var item in allItems)
             {
-                return items;
-            }
-            set
-            {
-                SetProperty(ref items, value); // null property name so update everything :)
-            }
-        }
-
-        public IList<string> Mediums
-        {
-            get
-            {
-                return mediums;
-            }
-            set
-            {
-                SetProperty(ref mediums, value);
-            }
-        }
-
-        public string SelectedMedium
-        {
-            get
-            {
-                return selectedMedium;
-            }
-            set
-            {
-                SetProperty(ref selectedMedium, value);
-
-                Items.Clear();
-
-                foreach (var item in allItems)
+                if (string.IsNullOrWhiteSpace(value) ||
+                    value == "All" ||
+                    value == item.MediaType.ToString())
                 {
-                    if (string.IsNullOrWhiteSpace(selectedMedium) ||
-                        selectedMedium == "All" ||
-                        selectedMedium == item.MediaType.ToString())
-                    {
-                        Items.Add(item);
-                    }
+                    Items.Add(item);
                 }
             }
         }
 
-        public MediaItem SelectedMediaItem
-        {
-            get => selectedMediaItem;
-            set
-            {
-                SetProperty(ref selectedMediaItem, value);
-                ((RelayCommand)DeleteCommand).RaiseCanExecuteChanged();
-            }
-        }
 
 
         // Commands
 
-        public ICommand AddEditCommand { get; set; }
-        public void AddOrEditItem()
+        //public ICommand AddEditCommand { get; set; }
+
+        [RelayCommand]
+        public void AddEditItem()
         {
             // Note this is temporary until
             // we use a real data source for items.
@@ -207,13 +146,15 @@ namespace MyMediaCollection.ViewModels
             additionalItemCount++;
         }
 
-        public ICommand DeleteCommand { get; set; }
+        //public ICommand DeleteCommand { get; set; }
+
+        [RelayCommand(CanExecute = nameof(CanDeleteItem))]
         private void DeleteItem()
         {
             allItems.Remove(SelectedMediaItem);
             Items.Remove(SelectedMediaItem);
         }
 
-        private bool CanDeleteItem() => selectedMediaItem != null;
+        private bool CanDeleteItem() => SelectedMediaItem != null;
     }
 }
