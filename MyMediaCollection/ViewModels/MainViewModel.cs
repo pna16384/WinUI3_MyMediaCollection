@@ -40,7 +40,8 @@ namespace MyMediaCollection.ViewModels
             PopulateData();
 
             // Setup commands
-            
+            DeleteCommand = new RelayCommand(DeleteItem, CanDeleteItem);
+            AddEditCommand = new RelayCommand(AddOrEditItem); // don't need CanDeleteItem param as Add is always available
         }
 
         public void reportEventStatus(string prefixText)

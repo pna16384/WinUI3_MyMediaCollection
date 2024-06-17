@@ -33,29 +33,9 @@ namespace MyMediaCollection
         // View reference to main ViewModel to bind to (static member of App)
         public MainViewModel ViewModel => App.ViewModel;
 
-
         public MainWindow()
         {
-            ViewModel.reportEventStatus("MainWindow (before InitialiseComponent...");
             this.InitializeComponent();
-            ViewModel.reportEventStatus("MainWindow (after InitialiseComponent...");
-        } 
-
-        private async void AddButton_Click(object sender, RoutedEventArgs e)
-        {
-            ViewModel.reportEventStatus("Add button pressed...");
-
-            var dialog = new ContentDialog
-            {
-                Title = "My Media Collection",
-                Content = "Adding items to the collection is not yet supported.",
-                CloseButtonText = "OK",
-                XamlRoot = Content.XamlRoot
-            };
-
-            await dialog.ShowAsync();
         }
-
-
     }
 }

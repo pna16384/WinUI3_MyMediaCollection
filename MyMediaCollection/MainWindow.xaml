@@ -37,7 +37,9 @@
         </Grid>
 
         <!-- Row 1 - Main list view -->
-        <ListView Grid.Row="1" ItemsSource="{x:Bind ViewModel.Items}">
+        <ListView Grid.Row="1"
+                  ItemsSource="{x:Bind ViewModel.Items}"
+                  SelectedItem="{x:Bind ViewModel.SelectedMediaItem, Mode=TwoWay}">
 
             <ListView.HeaderTemplate>
                 <DataTemplate>
@@ -68,6 +70,8 @@
             </ListView.HeaderTemplate>
             
             <ListView.ItemTemplate>
+                
+                <!-- x:Datatype specifies the namespace:Type.  Here the namespace is model (which above is defined as the C# namespace where the MediaItem type is defined -->
                 <DataTemplate x:DataType="model:MediaItem">
                     <Grid>
                         
@@ -85,8 +89,11 @@
             
         </ListView>
 
-        <!-- Row 2 - Button to add new items -->
-        <Button Content="Add Item" HorizontalAlignment="Right" Grid.Row="2" Margin="8" Click="AddButton_Click"/>
+        <!-- Row 2 - Button to add and delete items -->
+        <StackPanel Grid.Row="2" HorizontalAlignment="Right" Orientation="Horizontal">
+            <Button Command="{x:Bind ViewModel.AddEditCommand}" Content="Add Item" Margin="8,8,0,8"/>
+            <Button Command="{x:Bind ViewModel.DeleteCommand}" Content="Delete Item" Margin="8"/>
+        </StackPanel>
         
     </Grid>
     
