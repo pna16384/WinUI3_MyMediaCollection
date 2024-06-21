@@ -12,6 +12,7 @@ using MyMediaCollection;
 using System.Windows.Input;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using Microsoft.UI.Xaml.Input;
 
 namespace MyMediaCollection.ViewModels
 {
@@ -156,5 +157,12 @@ namespace MyMediaCollection.ViewModels
         }
 
         private bool CanDeleteItem() => SelectedMediaItem != null;
+
+
+        // Double-tapping functionality
+        public void ListViewDoubleTapped(object sender, DoubleTappedRoutedEventArgs args)
+        {
+            AddEditItem();
+        }
     }
 }
