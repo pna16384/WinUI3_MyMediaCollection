@@ -18,6 +18,7 @@ using Windows.ApplicationModel;
 using Windows.ApplicationModel.Activation;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
+using MyMediaCollection.Views;
 
 // To learn more about WinUI, the WinUI project structure,
 // and more about our project templates, see: http://aka.ms/winui-project-info.
@@ -51,8 +52,16 @@ namespace MyMediaCollection
         /// <param name="args">Details about the launch request and process.</param>
         protected override void OnLaunched(Microsoft.UI.Xaml.LaunchActivatedEventArgs args)
         {
-            RegisterComponents(); // Setup host and services so accessible when we create the window...
+            // MainWindow XAML is empty so create a new frame containing MainPage and set this as the main window's content instead!
             m_window = new MainWindow();
+            var rootFrame = new Frame();
+
+            RegisterComponents(); // Setup host and services so accessible when we create the window...
+
+            rootFrame.NavigationFailed += RootFrame_NavigationFailed;
+            rootFrame.Navigate(typeof(MainPage), args);
+            m_window.Content = rootFrame;
+
             m_window.Activate();
         }
 
@@ -66,6 +75,16 @@ namespace MyMediaCollection
             ).Build();
         }
 
-        
+
+
+        // Event handling
+
+        private void RootFrame_NavigationFailed(object sender,
+  NavigationFailedEventArgs e)
+        {
+            throw new Exception($"Error loading page {e.SourcePageType.FullName}");
+        }
+
+
     }
 }

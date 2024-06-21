@@ -32,13 +32,8 @@ namespace MyMediaCollection
     /// </summary>
     public sealed partial class MainWindow : Window
     {
-        // View reference to main ViewModel to bind to (static member of App)
-        public MainViewModel ViewModel;
-
         public MainWindow()
         {
-            ViewModel = App.HostContainer.Services.GetService<MainViewModel>(); // return nullable
-            //ViewModel = App.HostContainer.Services.GetService(typeof(MainViewModel)) as MainViewModel;
             this.InitializeComponent();
         }
     }
