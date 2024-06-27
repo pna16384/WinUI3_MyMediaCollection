@@ -13,90 +13,63 @@ using System.Windows.Input;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Microsoft.UI.Xaml.Input;
+using MyMediaCollection.Interfaces;
 
 namespace MyMediaCollection.ViewModels
 {
     public partial class MainViewModel : ObservableObject
     {
         [ObservableProperty]
-        private ObservableCollection<MediaItem> items; // data source for list - shows filtered items based on selected medium
+        private string selectedMedium;
+
+        [ObservableProperty]
+        private ObservableCollection<MediaItem> items = new ObservableCollection<MediaItem>();
+        private ObservableCollection<MediaItem> allItems; // private collection of all items ("master" list)
 
         [ObservableProperty]
         private IList<string> mediums;
-
-
-        [ObservableProperty]
-        private string selectedMedium;
 
         [ObservableProperty]
         [NotifyCanExecuteChangedFor(nameof(DeleteItemCommand))]
         private MediaItem selectedMediaItem;
 
+        private INavigationService _navigationService;
+        private IDataService _dataService;
 
-        private ObservableCollection<MediaItem> allItems; // private collection of all items ("master" list)
-        private int additionalItemCount = 1;
+        //private int additionalItemCount = 1;
+        private const string AllMediums = "All";
+        
 
-
-        public MainViewModel() 
+        public MainViewModel(INavigationService navigationService, IDataService dataService) 
         {
+            _navigationService = navigationService;
+            _dataService = dataService;
+
             PopulateData();
         }
 
 
         public void PopulateData()
         {
-            var cd = new MediaItem
+            // Instead of setting up data here, we pull it in from the data service
+            Items.Clear();
+
+            foreach (var item in _dataService.GetItems())
             {
-                Id = 1,
-                Name = "Classical Favourites",
-                MediaType = ItemType.Music,
-                MediumInfo = new Medium
-                {
-                    Id = 1,
-                    MediaType = ItemType.Music,
-                    Name = "CD"
-                }
-            };
+                Items.Add(item);
+            }
 
-            var book = new MediaItem
+            allItems = new ObservableCollection<MediaItem>(Items);
+
+            Mediums = new ObservableCollection<string>
             {
-                Id = 2,
-                Name = "Classic Fairy Tales",
-                MediaType = ItemType.Book,
-                MediumInfo = new Medium
-                {
-                    Id = 2,
-                    MediaType = ItemType.Book,
-                    Name = "Book"
-                }
+                AllMediums
             };
 
-            var bluRay = new MediaItem
+            foreach (var itemType in _dataService.GetItemTypes())
             {
-                Id = 3,
-                Name = "The Mummy",
-                MediaType = ItemType.Video,
-                MediumInfo = new Medium
-                {
-                    Id = 3,
-                    MediaType = ItemType.Video,
-                    Name = "Blu Ray"
-                }
-            };
-
-            // -----------------
-
-            Items = new ObservableCollection<MediaItem> { cd, book, bluRay };
-            allItems = new ObservableCollection<MediaItem> { cd, book, bluRay };
-
-            Mediums = new List<string> {
-                "All",
-                nameof(ItemType.Book),
-                nameof(ItemType.Music),
-                nameof(ItemType.Video)
-            };
-
-            // -----------------
+                Mediums.Add(itemType.ToString());
+            }
 
             SelectedMedium = Mediums[0];
         }
@@ -123,28 +96,18 @@ namespace MyMediaCollection.ViewModels
 
         // Commands
 
-        //public ICommand AddEditCommand { get; set; }
 
         [RelayCommand]
         public void AddEditItem()
         {
-            // Note this is temporary until
-            // we use a real data source for items.
-            const int startingItemCount = 3;
+            var selectedItemId = -1;
 
-            var newItem = new MediaItem
+            if (SelectedMediaItem != null)
             {
-                Id = startingItemCount + additionalItemCount,
-                Location = LocationType.InCollection,
-                MediaType = ItemType.Music,
-                MediumInfo = new Medium { Id = 1, MediaType = ItemType.Music, Name = "CD" },
-                Name = $"CD {additionalItemCount}"
-            };
+                selectedItemId = SelectedMediaItem.Id;
+            }
 
-            allItems.Add(newItem);
-            Items.Add(newItem);
-
-            additionalItemCount++;
+            _navigationService.NavigateTo("ItemDetailsPage", selectedItemId);
         }
 
         //public ICommand DeleteCommand { get; set; }

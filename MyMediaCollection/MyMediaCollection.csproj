@@ -13,6 +13,7 @@
     <EnableMsixTooling>true</EnableMsixTooling>
   </PropertyGroup>
   <ItemGroup>
+    <None Remove="Views\ItemDetailsPage.xaml" />
     <None Remove="Views\MainPage.xaml" />
   </ItemGroup>
 
@@ -56,4 +57,10 @@
   <PropertyGroup Condition="'$(DisableHasPackageAndPublishMenuAddedByProject)'!='true' and '$(EnableMsixTooling)'=='true'">
     <HasPackageAndPublishMenu>true</HasPackageAndPublishMenu>
   </PropertyGroup>
+  <ItemGroup>
+    <CustomAdditionalCompileInputs Remove="Views\ItemDetailsPage.xaml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Remove="Views\ItemDetailsPage.xaml" />
+  </ItemGroup>
 </Project>

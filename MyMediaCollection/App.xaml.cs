@@ -19,6 +19,8 @@ using Windows.ApplicationModel.Activation;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
 using MyMediaCollection.Views;
+using MyMediaCollection.Services;
+using MyMediaCollection.Interfaces;
 
 // To learn more about WinUI, the WinUI project structure,
 // and more about our project templates, see: http://aka.ms/winui-project-info.
@@ -56,7 +58,7 @@ namespace MyMediaCollection
             m_window = new MainWindow();
             var rootFrame = new Frame();
 
-            RegisterComponents(); // Setup host and services so accessible when we create the window...
+            RegisterComponents(rootFrame); // Setup host and services so accessible when we create the window...
 
             rootFrame.NavigationFailed += RootFrame_NavigationFailed;
             rootFrame.Navigate(typeof(MainPage), args);
@@ -65,16 +67,28 @@ namespace MyMediaCollection
             m_window.Activate();
         }
 
-        // Initialise container (HostContainer) and create first dependency based on MainViewModel 
-        private void RegisterComponents()
+        private void RegisterComponents(Frame rootFrame)
         {
+            // Create navigation service and add pages for main view and itemdetails view
+            var navigationService = new NavigationService(rootFrame);
+
+            navigationService.Configure(nameof(MainPage), typeof(MainPage));
+            navigationService.Configure(nameof(ItemDetailsPage), typeof(ItemDetailsPage));
+
+            var dataService = new DataService();
+
             HostContainer = Host.CreateDefaultBuilder().ConfigureServices(
                 services => {
-                    services.AddTransient<MainViewModel>();
+                    services.AddSingleton<INavigationService>(navigationService); // pre-created and initialised service object
+                    //services.AddSingleton<IDataService, DataService>(); // created when added???
+                    //
+                    
+                    services.AddSingleton<IDataService>(dataService);
+                    services.AddTransient<MainViewModel>(); // MainViewModel constructor will get passed the service objects by the container when instantiated :)
+                    services.AddTransient<ItemDetailsViewModel>();
                 }
             ).Build();
         }
-
 
 
         // Event handling
